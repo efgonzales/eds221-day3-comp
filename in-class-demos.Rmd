@@ -10,6 +10,9 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 #include = FALSE makes it so NOTHING from this code chunk will show up on rendered doc.
 
 library(tidyverse)
+library(palmerpenguins)
+library(starwars)
+
 ```
 
 ### `if` statements
@@ -69,5 +72,41 @@ tatooine_characters <- starwars |>
 tatooine_endor_naboo <- starwars |> 
   filter(homeworld %in% c("Tatooine", "Naboo", "Endor"))
 # In words: does the value in the homeworld variable for that row exist IN that vector c("Tatooine" "Nab...)?
+```
+
+## Calculate mean bill length by species using `group by |> summarize`
+```{r}
+penguins |> 
+  group_by(species, island) |> 
+  summarize(mean_bill_length = mean(bill_length_mm, na.rm = TRUE),
+            sd_bill_length = sd(bill_length_mm, na.rm = TRUE),
+            n=n())  
+# n=n() doesnt take na.rm=true into account; so, it counts everything including na 
+
+# summarize takes given function and applies it to group, calculating single function for each group, then returns it in a summary table. 
+
+# you can also use apply() but ^^this is better 
+```
+
+Find the mean & standard deviation of character height in Star Wars, grouped by homeworld.
+```{r}
+starwars |> 
+  group_by(homeworld) |> 
+  summarize(mean_character_height = mean(height, na.rm = TRUE),
+            sd_character_height = sd(height, na.rm = TRUE))
+
+starwars |> 
+  group_by(homeworld) |> 
+  summarize(max_height = max(height, na.rm = TRUE),
+            min_height = min(height, na.rm = TRUE))
+```
+ 
+Find the max & min flipper length, and sample size, for each species of penguin
+```{r}
+penguins |> 
+  group_by(species, sex) |> 
+  summarize(max_flipper_length = max(flipper_length_mm, na.rm = TRUE),
+            min_flipper_length = min(flipper_length_mm, na.rm = TRUE),
+            n = n())
 ```
 
